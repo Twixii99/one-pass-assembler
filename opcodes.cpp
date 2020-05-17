@@ -26,13 +26,10 @@ Opcodes* Opcodes::getInstance() {
 }
 
 void Opcodes::fill_optable() {
-	//if(Opcodes::unique == 0) {
       if(!codes) {
             cerr << "CAN\'T FOUND.";
             exit(EXIT_FAILURE);
       }
-    //}
-
 	string line;
 	std::vector<string> vec;
 	while(getline(codes, line)) {
