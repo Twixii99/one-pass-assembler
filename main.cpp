@@ -9,7 +9,8 @@
 #include <vector>
 #include <cctype>
 
-#include "Instruction_manip"
+#include "opcodes.h"
+//#include "Instruction_manip.h"
 
 using namespace std;
 
@@ -58,6 +59,7 @@ struct label_data {
 };
 
 unordered_map<string, label_data> labels;        // symbol table
+Opcodes operations;
 
 int main()
 {
@@ -93,7 +95,6 @@ int main()
             continue;
         }
         ++lineNO;
-        parsedata(data);
     }
     return 0;
 }
@@ -111,16 +112,3 @@ bool caseInSensStringCompareCpp11(string str1, string str2)
 void printErrorMessage() {
     cerr << "there may be an error in line " << ::lineNO << '.' << endl;
 }
-
-void parsedata(vector<string> &v) {
-    for(int i = 0; i < 4; ++i)
-        cout << v.at(i) << endl;
-}
-
-
-
-
-
-
-
-
