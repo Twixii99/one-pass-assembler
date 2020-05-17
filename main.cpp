@@ -1,6 +1,5 @@
 #include <iostream>
 #include <iomanip>
-#include <string>
 #include <list>
 #include <unordered_map>
 #include<bits/stdc++.h> 
@@ -16,7 +15,6 @@ using namespace std;
 
 bool caseInSensStringCompareCpp11(string str1, string str2);
 void printErrorMessage();
-void parsedata(std::vector<string> &v);
 
 const int DEFAULT_BLOCK = 0;
 const int DEFAULT_CSEC = 0;
@@ -59,11 +57,11 @@ struct label_data {
 };
 
 unordered_map<string, label_data> labels;        // symbol table
-Opcodes operations;
+Opcodes* operations = Opcodes::getInstance();
 
 int main()
 {
-    fstream source_file {"source.txt", ios::in}; // object for the input file.
+   /* fstream source_file {"source.txt", ios::in}; // object for the input file.
 
     // checking if the source file opened succesfully.
     if(!source_file) {
@@ -79,7 +77,7 @@ int main()
      * operator = vector.at(1).
      * operand = vector.at(2).
     */
-    vector<string> data;
+   /* vector<string> data;
     while(getline(source_file, line)) {
         stringstream data_line(line);
 
@@ -95,7 +93,11 @@ int main()
             continue;
         }
         ++lineNO;
-    }
+    }*/
+    cout << operations << endl;
+    Opcodes* ass = Opcodes::getInstance();
+    cout << ass << endl;
+    cout << ass->getopcode("LDS") << endl;
     return 0;
 }
 

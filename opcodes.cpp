@@ -12,25 +12,36 @@ using namespace std;
 unordered_map<string, string> optable;
 fstream codes {"opcodes.txt", ios::in};
 
-Opcodes::Opcodes() {
-      this->fill_optable();
+Opcodes* Opcodes::unique = 0;
+
+Opcodes::Opcodes() {}
+
+Opcodes* Opcodes::getInstance() {
+	if(Opcodes::unique == 0) {
+		Opcodes::unique = new Opcodes();
+		unique->fill_optable();
+	}
+	
+	return Opcodes::unique;
 }
 
 void Opcodes::fill_optable() {
+	//if(Opcodes::unique == 0) {
       if(!codes) {
             cerr << "CAN\'T FOUND.";
             exit(EXIT_FAILURE);
       }
+    //}
 
-      string line;
-      std::vector<string> vec;
-      while(getline(codes, line)) {
-            stringstream ss(line);
-            string x, y;
-            getline(ss, x, ' ');
-            ss >> y;
-            ::optable[x] = y;
-      }
+	string line;
+	std::vector<string> vec;
+	while(getline(codes, line)) {
+	    stringstream ss(line);
+	    string x, y;
+	    getline(ss, x, ' ');
+	    ss >> y;
+	    ::optable[x] = y;
+	}
 }
 
 string Opcodes::getopcode(string opcode) {

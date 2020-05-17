@@ -3,10 +3,13 @@
 
 #include <string>
 class Opcodes {
-	void fill_optable();
-	public:
+	private:
+		static Opcodes* unique;
 		Opcodes();
+		void fill_optable();
+	public:
 		std::string getopcode(std::string);
+		static Opcodes* getInstance();
 };
 
 #endif
