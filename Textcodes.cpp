@@ -24,10 +24,10 @@ using namespace std;
         length=0;
         currtext = "";
     }
- int  Textcodes::addText( vector<string> data)
+ int  Textcodes::addText(vector<string> data)
     {
-        Opcodes opcod;
-        string opcode=opcod.getopcode(data[1]);
+       Opcodes* opcod = Opcodes::getInstance();
+       string opcode = opcod->getopcode(data[1]);
        if( opcode=="null" || (opcode== "4c" && data.size()<3 )  )
             return 0;
        currtext+="^";
@@ -42,8 +42,8 @@ using namespace std;
     }
  string Textcodes::tostring()
   {
-stringstream stemp;
+        stringstream stemp;
         stemp<<setw(4)<<setfill('0')<<hex<<length;
         return start+  currtext;
 
- }
+  }

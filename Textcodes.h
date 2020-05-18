@@ -1,5 +1,5 @@
 #ifndef TEXTCODES_H
-#define TEXTCODES_h
+#define TEXTCODES_H
 #include <vector>
 #include <string>
 class Textcodes{
