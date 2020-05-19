@@ -8,6 +8,9 @@
 #include <vector>
 #include <cctype>
 
+#include "TextRecordFactory.h"
+#include "symtable.h"
+#include "Textcodes.h"
 #include "opcodes.h"
 //#include "Instruction_manip.h"
 
@@ -15,7 +18,9 @@ using namespace std;
 
 bool caseInSensStringCompareCpp11(string str1, string str2);
 void printErrorMessage();
-
+bool isderctive(string s);
+bool is_valid(vector<string> data);
+bool label_validaty_checker(string str);
 const int DEFAULT_BLOCK = 0;
 const int DEFAULT_CSEC = 0;
 
@@ -61,7 +66,21 @@ Opcodes* operations = Opcodes::getInstance();
 
 int main()
 {
-   /* fstream source_file {"source.txt", ios::in}; // object for the input file.
+ Symtable* sys = Symtable::getInstance();
+	sys->insert("COPY");
+	Sym* syu = sys->getSymbol("COPY");
+//	cout << syu-> name << "\t" << syu->address << endl;
+
+  vector<string> tt;
+  tt.push_back(""); tt.push_back("LDS");tt.push_back("ALPHA");
+
+  TextRecordFactory* fac =TextRecordFactory::getInstance();
+  fac->addTextRecord(tt,1000);
+tt.clear();
+tt.push_back(""); tt.push_back("LDA");tt.push_back("ALPHA");
+ fac->addTextRecord(tt,1003);
+/*
+    fstream source_file {"source.txt", ios::in}; // object for the input file.
     // checking if the source file opened succesfully.
     if(!source_file) {
         cout << "failed to open the source code file";
@@ -75,13 +94,13 @@ int main()
      * operator = vector.at(1).
      * operand = vector.at(2).
     */
-    vector<string> data;
+   /* vector<string> data;
     while(getline(source_file, line)) {
         stringstream data_line(line);
-        for(string s; data_line >> s; )
-            if(data.empty() && (isderctive(s) || operations->getopcode(s)!= "null" )
+        for(string s; data_line >> s; ){
+            if(data.empty() || (isderctive(s) operations->getopcode(s)!= nullptr ) )
                data.push_back("");
-            data.push_back(s);
+            data.push_back(s); }
         if(data.size() > 3)
             if(data.at(3).at(0) != data.at(3).at(1))
                 printErrorMessage();
@@ -90,13 +109,13 @@ int main()
             data.clear();
             continue;
         }
-
+        data.clear();
         ++lineNO;
-    }
-    cout << operations << endl;
+    } */
+  //  cout << operations << endl;
     Opcodes* ass = Opcodes::getInstance();
-    cout << ass << endl;
-    cout << ass->getopcode("LDS") << endl;
+   // cout << ass << endl;
+  //  cout << ass->getopcode("LDSs") << endl;
     return 0;
 }
 
