@@ -25,7 +25,7 @@ TextRecordFactory* TextRecordFactory::getInstance()
 
     return textRecFactory;
 }
-
+int numberOfBytes(const vector<string>& statement);
 Sym* TextRecordFactory::modifyPrevAddress(string label) {
 
     if (label == "")
@@ -33,12 +33,12 @@ Sym* TextRecordFactory::modifyPrevAddress(string label) {
     Symtable* table = Symtable::getInstance();
     Sym* symb = table->getSymbol(label);
 
-    if (symb == nullptr || symb->address != "*" ||symb->operandsNeedThisLabel.size() == 0)
+    if (symb == nullptr || symb->address != "*" || symb->operandsNeedThisLabel.size() == 0)
         return nullptr;
 
     return symb;
 }
-bool TextRecordFactory::addTextRecord(const vector<string>& statement, int locctr){
+void TextRecordFactory::addTextRecord(const vector<string>& statement, int locctr){
 
     int status = 0;
     Sym* symb = modifyPrevAddress(statement.at(0));
@@ -47,24 +47,25 @@ bool TextRecordFactory::addTextRecord(const vector<string>& statement, int locct
         if (textRecord->tostring().size() > 0) {
             cout << textRecord->tostring() << '\n';
         }
-        status = textRecord->addText(statement, symb);
+       textRecord->addText(statement, symb);
+
         textRecord->newText(locctr);
     }
     else {
         // i dont know the limit :(
-        if (textRecord->tostring().size() / 2 + numberOfBytes(statement) > 30){
+       if (textRecord->tostring().size() / 2 + numberOfBytes(statement) > 30){
             cout << textRecord->tostring() << '\n';
             textRecord->newText(locctr);
         }
-        else if (textRecord->tostring().size() == 0)
-            textRecord.newText(locctr);
-        status = textRecord->addText(statement);
+       else  if(textRecord->length == 0)
+        textRecord->newText(locctr);
+      textRecord->addText(statement);
+      //to see cuurtext
+     cout<< textRecord->tostring()<<endl;
     }
-    return status > 0;
 }
 
-
-int numberOfBytes(const vector<string>& statement)
+  int numberOfBytes(const vector<string>& statement)
 {
     if (statement[1][0] == '+')
         return 4;
@@ -72,5 +73,3 @@ int numberOfBytes(const vector<string>& statement)
         return 2;
     return 3;
 }
-
-
