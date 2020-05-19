@@ -9,6 +9,7 @@
 
 #include "opcodes.h"
 #include "Textcodes.h"
+#include "symtable.h"
 using namespace std;
 
 
@@ -40,6 +41,21 @@ using namespace std;
         length+=3;
 
     }
+int Textcodes::addText(std::vector<std::string> data, Sym* label) {
+
+    length = label->address.size() / 2;
+    currtext = label->address;
+    for (int i = 0; i < label->operandsNeedThisLabel.size(); i++)
+    {
+        stringstream stream;
+        std::list<std::string>::iterator it = label->operandsNeedThisLabel.begin();
+        std::advance(it, i);
+        stream << setw(6) << setfill('0') << *it;
+        start = "T^" + stream.str() + "^";
+        cout << tostring() << '\n';
+    }
+}
+
  string Textcodes::tostring()
   {
         stringstream stemp;

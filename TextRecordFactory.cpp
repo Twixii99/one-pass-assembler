@@ -8,6 +8,7 @@
 
 #include "TextRecordFactory.h"
 #include "Textcodes.h"
+#include "symtable.h"
 using namespace std;
 
 TextRecordFactory* TextRecordFactory::textRecFactory  = nullptr;
@@ -25,34 +26,35 @@ TextRecordFactory* TextRecordFactory::getInstance()
     return textRecFactory;
 }
 
-bool TextRecordFactory::isitNewPanel(string word) {
+Sym* TextRecordFactory::modifyPrevAddress(string label) {
 
-    transform(word.begin(), word.end(), word.begin(), ::tolower);
+    if (label == "")
+        return nullptr;
+    Symtable* table = Symtable::getInstance();
+    Sym* symb = table->getSymbol(label);
 
-    if (word == "byte" || word == "word" || word == "resw" || word == "resb")
-        return true;
-    return false;
+    if (symb == nullptr || symb->address != "*" ||symb->operandsNeedThisLabel.size() == 0)
+        return nullptr;
 
-
+    return symb;
 }
 bool TextRecordFactory::addTextRecord(const vector<string>& statement, int locctr){
 
     int status = 0;
-    if (isitNewPanel(statement.at(1)))
+    Sym* symb = modifyPrevAddress(statement.at(0));
+    if (symb != nullptr)
     {
         if (textRecord->tostring().size() > 0) {
             cout << textRecord->tostring() << '\n';
         }
-        textRecord->newText(locctr);
-        status = textRecord->addText(statement);
-        cout << textRecord->tostring() << '\n';
+        status = textRecord->addText(statement, symb);
         textRecord->newText(locctr);
     }
     else {
         // i dont know the limit :(
         if (textRecord->tostring().size() > 30){
             cout << textRecord->tostring() << '\n';
-             textRecord->newText(locctr);
+            textRecord->newText(locctr);
         }
         status = textRecord->addText(statement);
     }

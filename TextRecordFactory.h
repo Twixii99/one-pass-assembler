@@ -1,6 +1,7 @@
 #ifndef FACTORY
 #define FACTORY
 #include "Textcodes.h"
+#include "symtable.h"
 #include <vector>
 #include <string>
 using namespace std;
@@ -10,7 +11,7 @@ private:
     Textcodes* textRecord;
     static TextRecordFactory* textRecFactory;
     TextRecordFactory();
-    bool isitNewPanel(string word);
+    Sym* modifyPrevAddress(string label);
 public:
 
     static TextRecordFactory* getInstance();
