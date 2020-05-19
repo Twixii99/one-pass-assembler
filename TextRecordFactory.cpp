@@ -33,7 +33,7 @@ Sym* TextRecordFactory::modifyPrevAddress(string label) {
     Symtable* table = Symtable::getInstance();
     Sym* symb = table->getSymbol(label);
 
-    if (symb == nullptr || symb->address != "*" ||symb->operandsNeedThisLabel.size() == 0)
+    if (symb == nullptr || symb->address == "*" || symb->operandsNeedThisLabel.size() == 0)
         return nullptr;
 
     return symb;
@@ -48,6 +48,7 @@ bool TextRecordFactory::addTextRecord(const vector<string>& statement, int locct
             cout << textRecord->tostring() << '\n';
         }
         status = textRecord->addText(statement, symb);
+        symb->operandsNeedThisLabel.clear();
         textRecord->newText(locctr);
     }
     else {
