@@ -21,15 +21,16 @@ Opcodes* Opcodes::getInstance() {
 		Opcodes::unique = new Opcodes();
 		unique->fill_optable();
 	}
-	
+
 	return Opcodes::unique;
 }
 
 void Opcodes::fill_optable() {
-      if(!codes) {
-            cerr << "CAN\'T FOUND.";
-            exit(EXIT_FAILURE);
-      }
+    if(!codes) {
+        cerr << "CAN\'T FOUND.";
+  //      exit(EXIT_FAILURE);
+    }
+
 	string line;
 	std::vector<string> vec;
 	while(getline(codes, line)) {
@@ -42,6 +43,9 @@ void Opcodes::fill_optable() {
 }
 
 string Opcodes::getopcode(string opcode) {
-      return optable.at(opcode);                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         
+    std::unordered_map<string, string>::const_iterator got = optable.find(opcode);
+    if(got == optable.end())
+    	return "null";
+    return got->second;
 }
 
