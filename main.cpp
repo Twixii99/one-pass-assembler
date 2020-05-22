@@ -13,6 +13,8 @@
 #include "symtable.h"
 #include "Textcodes.h"
 #include "opcodes.h"
+#include "parsing.h"
+
 //#include "Instruction_manip.h"
 
 using namespace std;
@@ -68,26 +70,28 @@ Opcodes* operations = Opcodes::getInstance();
 int main()
 {
  Symtable* sys = Symtable::getInstance();
-/*	sys->insert("COPY");
+	sys->insert("COPY");
 	Sym* syu = sys->getSymbol("COPY");
 //	cout << syu-> name << "\t" << syu->address << endl;
 
   vector<string> tt;
   tt.push_back(""); tt.push_back("LDS");tt.push_back("ALPHA");
-
+     parsing par(tt);
   TextRecordFactory* fac =TextRecordFactory::getInstance();
-  fac->addTextRecord(tt,1000);
-tt.clear();
-tt.push_back(""); tt.push_back("LDA");tt.push_back("ALPHA");
- fac->addTextRecord(tt,1003);
-*/
-  fstream source_file {"source.txt", ios::in}; // object for the input file.
+  fac->addTextRecord(tt,1000,par.modesaddress,par.numofBytes);
+  tt.clear();
+  tt.push_back(""); tt.push_back("LDA");tt.push_back("ALPHA");
+   parsing par2(tt);
+  fac->addTextRecord(tt,1003,par2.modesaddress,par2.numofBytes);
+
+
+ /* fstream source_file {"source.txt", ios::in}; // object for the input file.
     // checking if the source file opened succesfully.
     if(!source_file) {
         cout << "failed to open the source code file";
         exit(EXIT_FAILURE);
     }
- string line;
+   string line;
    vector<string> data;
     while(getline(source_file, line)) {
         stringstream data_line(line);
@@ -98,9 +102,12 @@ tt.push_back(""); tt.push_back("LDA");tt.push_back("ALPHA");
             data.push_back(s); }
            if(data.size()<3) data.push_back("");
            cout<<data[0]<<" " <<data[1]<<" "<<data[2]<<endl;
+         parsing par(data);
+
+
            data.clear();
     }
-
+   */
 /*
     fstream source_file {"source.txt", ios::in}; // object for the input file.
     // checking if the source file opened succesfully.

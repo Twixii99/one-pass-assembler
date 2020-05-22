@@ -25,7 +25,6 @@ TextRecordFactory* TextRecordFactory::getInstance()
 
     return textRecFactory;
 }
-int numberOfBytes(const vector<string>& statement);
 Sym* TextRecordFactory::modifyPrevAddress(string label) {
 
     if (label == "")
@@ -38,13 +37,13 @@ Sym* TextRecordFactory::modifyPrevAddress(string label) {
 
     return symb;
 }
-void TextRecordFactory::addTextRecord(const vector<string>& statement, int locctr){
+void TextRecordFactory::addTextRecord(const vector<string>& statement, int locctr,long long flags,int numofbites ){
 
     int status = 0;
     Sym* symb = modifyPrevAddress(statement.at(0));
     if (symb != nullptr)
     {
-        if (textRecord->tostring().size() > 0) {
+        if (textRecord->length > 0) {
             cout << textRecord->tostring() << '\n';
         }
        textRecord->addText(statement, symb);
@@ -53,23 +52,15 @@ void TextRecordFactory::addTextRecord(const vector<string>& statement, int locct
     }
     else {
         // i dont know the limit :(
-       if (textRecord->tostring().size() / 2 + numberOfBytes(statement) > 30){
+       if (textRecord->length  + numofbites >= 30){
             cout << textRecord->tostring() << '\n';
             textRecord->newText(locctr);
         }
        else  if(textRecord->length == 0)
         textRecord->newText(locctr);
-      textRecord->addText(statement);
+      textRecord->addText(statement,flags,numofbites);
       //to see cuurtext
      cout<< textRecord->tostring()<<endl;
     }
 }
 
-  int numberOfBytes(const vector<string>& statement)
-{
-    if (statement[1][0] == '+')
-        return 4;
-    else if (statement[1][statement[1].size()-1] == 'r' || statement[1][statement[1].size()-1] == 'R')
-        return 2;
-    return 3;
-}

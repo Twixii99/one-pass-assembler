@@ -15,7 +15,7 @@ private:
 public:
 
     static TextRecordFactory* getInstance();
-    void addTextRecord(const std::vector<std::string> &statement, int locctr);
+    void addTextRecord(const std::vector<std::string> &statement, int locctr,long long flags, int numofbites);
 };
 
 

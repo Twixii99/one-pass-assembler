@@ -11,7 +11,7 @@ class Textcodes{
     int length;
    Textcodes();
   void  newText(int locctr);
-  void addText( std::vector<std::string> data);
+  void addText( std::vector<std::string> data,long long flags, int numofbites);
   void addText(std::vector<std::string> data,Sym* label);
   std::string tostring();
 };

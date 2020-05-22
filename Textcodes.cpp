@@ -6,6 +6,9 @@
 #include <vector>
 #include <sstream>
 #include <string>
+#include <math.h>
+#include <algorithm>
+#include <cstdio>
 
 #include "opcodes.h"
 #include "Textcodes.h"
@@ -17,6 +20,12 @@ using namespace std;
   length=0;
   }
 
+  bool is_number(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
  void Textcodes::newText(int locctr)
     {
         stringstream stemp;
@@ -25,23 +34,78 @@ using namespace std;
         length=0;
         currtext = "";
     }
- int  Textcodes::addText(vector<string> data)
+ void  Textcodes::addText(vector<string> data,long long flags,int numofbites)
     {
        Opcodes* opcod = Opcodes::getInstance();
+        string data1 = data[1];
+       if(numofbites == 4)
+            data1 = data1.substr(1, data1.size() - 1);
        string opcode = opcod->getopcode(data[1]);
-       if( opcode=="null" || (opcode== "4c" && data.size()<3 )  )
-            return 0;
        currtext+="^";
-       currtext+=opcode;
-       if(data.size()<3 /* ||  symtab(data[2] == "null"  */ )
-        currtext+="0000";
-       else {
-       // currtext+=symtab(data[2]);
+
+       Symtable* sys = Symtable::getInstance();
+       string data2=data[2];
+       if (data2[0] == '#' || data2[0] == '@')
+        data2 = data2.substr(1, data2.size() - 1);
+       if (data2.size() > 2 && data2[data2.size() - 1] == 'X' && data2[data2.size() - 2] == ',') {
+           data2 = data2.substr(0, data2.size() - 2);
        }
-        length+=3;
+       int curraddress = 0;
+       stringstream strs;
+     if(is_number(data2)){
+        strs << data2;
+       strs >>curraddress;
+
+     }else{
+
+        Sym* syu = sys->getSymbol(data[2]);
+       if( syu == nullptr  ){
+        curraddress = 0;
+        flags &= 61;
+       }
+       else {
+        strs<< (syu->address);
+        strs>>curraddress;
+       }
 
     }
-int Textcodes::addText(std::vector<std::string> data, Sym* label) {
+    long long objectCode=0;
+    long long lopcode,lcurr;
+    strs<<hex<<opcode;
+    strs>>lopcode;
+    if ((flags & (1 << 4)) != 0 && numofbites != 2)
+        lopcode++;
+    if ((flags & (1 << 5)) != 0 && numofbites != 2)
+        lopcode+=2;
+   // cout << currtext << endl;
+        strs.clear();
+
+    strs<<setw(2)<<setfill('0')<<hex<<lopcode;
+    string sol;
+    strs >> sol;
+    currtext+=sol;
+   // cout<<"sda"<<lopcode<<endl;
+    strs.clear();
+    if (numofbites == 3){
+        for (int i = 0; i <= 3; i++){
+            if ((flags & (1 << i)) != 0)
+                objectCode |= (1 << (i + 12));
+         }
+    }
+    else if (numofbites == 4){
+        for (int i = 0; i <= 3; i++){
+            if ((flags & (1 << i)) != 0)
+                objectCode |= (1 << (i + 20));
+         }
+    }
+
+
+     strs<<setw(4)<<setfill('0')<<hex<<objectCode;
+     strs >> sol;
+     currtext+=sol;
+        length+=numofbites;
+    }
+void Textcodes::addText(std::vector<std::string> data, Sym* label) {
 
     length = label->address.size() / 2;
     currtext = label->address;
@@ -59,7 +123,8 @@ int Textcodes::addText(std::vector<std::string> data, Sym* label) {
  string Textcodes::tostring()
   {
         stringstream stemp;
-        stemp<<setw(4)<<setfill('0')<<hex<<length;
-        return start+  currtext;
+        stemp<<setw(2)<<setfill('0')<<hex<<length;
+        return start+ stemp.str()+"^" +currtext;
 
   }
+
