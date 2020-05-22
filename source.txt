@@ -1,1 +1,4 @@
-start
+START LDA ALPHA
+ ADd   bETA 
+ADD #1
+STA 

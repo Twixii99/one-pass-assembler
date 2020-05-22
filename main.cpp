@@ -7,6 +7,7 @@
 #include <sstream>
 #include <vector>
 #include <cctype>
+#include <algorithm>
 
 #include "TextRecordFactory.h"
 #include "symtable.h"
@@ -67,7 +68,7 @@ Opcodes* operations = Opcodes::getInstance();
 int main()
 {
  Symtable* sys = Symtable::getInstance();
-	sys->insert("COPY");
+/*	sys->insert("COPY");
 	Sym* syu = sys->getSymbol("COPY");
 //	cout << syu-> name << "\t" << syu->address << endl;
 
@@ -79,6 +80,27 @@ int main()
 tt.clear();
 tt.push_back(""); tt.push_back("LDA");tt.push_back("ALPHA");
  fac->addTextRecord(tt,1003);
+*/
+  fstream source_file {"source.txt", ios::in}; // object for the input file.
+    // checking if the source file opened succesfully.
+    if(!source_file) {
+        cout << "failed to open the source code file";
+        exit(EXIT_FAILURE);
+    }
+ string line;
+   vector<string> data;
+    while(getline(source_file, line)) {
+        stringstream data_line(line);
+        for(string s; data_line >> s; ){
+        transform(s.begin(), s.end(), s.begin(), ::toupper );
+            if(data.empty() && ( isderctive(s) || operations->getopcode(s)!= "null" ) )
+               data.push_back("");
+            data.push_back(s); }
+           if(data.size()<3) data.push_back("");
+           cout<<data[0]<<" " <<data[1]<<" "<<data[2]<<endl;
+           data.clear();
+    }
+
 /*
     fstream source_file {"source.txt", ios::in}; // object for the input file.
     // checking if the source file opened succesfully.
@@ -151,11 +173,6 @@ bool isderctive(string s ){
 
 
 
-bool caseInSensStringCompareCpp11(string str1, string str2)
-{
-    transform(str1.begin(), str1.end(), str1.begin(), ::tolower);
-    return str1.compare(str2) == 0;
-}
 
 void printErrorMessage() {
     cerr << "there may be an error in line " << ::lineNO << '.' << endl;
