@@ -19,7 +19,7 @@ class Symtable {
       Symtable();
    public:
       static Symtable* getInstance();
-      void insert(std::string);
+      void insert(std::string, int);
       void insert(std::string, std::string, bool, int, int);
       Sym* getSymbol(std::string);
 };

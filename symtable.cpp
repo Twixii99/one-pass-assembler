@@ -16,10 +16,11 @@ Symtable* Symtable::getInstance() {
 	return Symtable::unique;
 }
 
-void Symtable::insert(string symbol) {
+void Symtable::insert(string symbol, int loccnt) {
 	Sym* sym = new Sym();
 	sym->name = symbol;
 	sym->address = "*";
+	sym->operandsNeedThisLabel.push_back(to_string(loccnt));
 	symtable[symbol] = sym;
 }
 
@@ -39,10 +40,3 @@ Sym* Symtable::getSymbol(string symbol) {
     	return 0;
     return got->second;
 }
-
-/*int main() {
-	Symtable* sys = Symtable::getInstance();
-	sys->insert("COPY");
-	Sym* syu = sys->getSymbol("COPY");
-	cout << syu-> name << "\t" << syu->address << endl;
-} */
