@@ -1,4 +1,5 @@
 START  1000
+alpha word 5
 lda alpha
  ADd   bETA 
 ADD  #1

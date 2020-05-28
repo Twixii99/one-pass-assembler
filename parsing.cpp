@@ -19,13 +19,13 @@ using namespace std;
 regex r(R"(^^\s*[-+]?((\d+(\.\d+)?)|(\d+\.)|(\.\d+))(e[-+]?\d+)?\s*$)");
 
 unordered_map<string, string> directives = {
-  {"NOBASE", ""},         // done
+  {"NOBASE", ""},        // done
   {"LITORG", ""},
   {"EXTREF", ""},
   {"EXTDEF", ""},
   {"START", ""},         // done
   {"RESW", ""},          // done
-  {"RESB", ""},			 // done
+  {"RESB", ""},			     // done
   {"BYTE", ""},          // done
   {"WORD", ""},          // done
   {"BASE", ""},          // done
@@ -50,9 +50,7 @@ void parsing::clear() {
   parsing::locc = 0;
 }
 
-parsing::parsing() {
-  parsing::clear();
-}
+parsing::parsing() {}
 
 int parsing::display(vector<string> &statement) {
   parsing::clear();
@@ -60,6 +58,7 @@ int parsing::display(vector<string> &statement) {
 	if(parsing::isDirective(str)) {
 		parseDirective(statement);
 		parsing::valid = false;
+    return parsing::locc;
 	}
 	else {
 		if(statement[1][0] == '+')
@@ -67,13 +66,12 @@ int parsing::display(vector<string> &statement) {
 		valid = Opcodes::getInstance()->getopcode(str) == "null" ? false : true;
 	}
 	if(parsing::valid) {
-    cout << "Kamola" << endl;
 		setnumofBytes(statement);
 		if(numofBytes != 2)
-		  setaddressmode(statement);
+		setaddressmode(statement);
 		checkParsing(statement);
 	}
-	return locc;
+  return parsing::numofBytes;
 }
 
 void parsing::checkParsing(vector<string> &statement) {
@@ -148,19 +146,29 @@ void parsing::parseDirective(vector<string> &statement) {
 			case 'B' :
 				if(regex_match(statement[2], r))
 					parsing::locc += stoi(statement[2]); 
+        else 
+          parsing::valid = 0;
 				break;
 			case 'W' :
 				if(regex_match(statement[2], r))
 					parsing::locc += stoi(statement[2]) * 3;
+        else
+          parsing::valid = 0;
 				break;
 			case 'D' :
 				if(regex_match(statement[2], r))
 					parsing::locc += 3;
+        else
+          parsing::valid = 0;
 				break;
 			default :
-				if((statement[2][0] == 'X' || statement[2][0] == 'C'))
+				if((statement[2][0] == 'X' || statement[2][0] == 'C')) {
 					if(statement[2][1] == statement[2][statement[2].size()-1] == '\'')
 						locc += statement[2].substr(2).size()-1;
+          else
+            parsing::valid = 0;
+        } else
+          parsing::valid = 0;
 		}
 	}
 	else if(statement[1] == "BASE" && statement[2] == "" || statement[1] == "NOBASE" && !(statement[2] == "")) {
@@ -185,9 +193,40 @@ void parsing::parseDirective(vector<string> &statement) {
 		}
 }
 
+int parsing::parseExpression(string exp) {
+      
+    if (exp.size() > 2 && exp[exp.size() - 1] == 'X' && exp[exp.size() - 2] == ',')
+      exp = exp.substr(0, exp.size() - 2);
+
+    if (exp[0] == '#' || exp[0] == '@')
+      exp = exp.substr(1, exp.size() - 1); 
+
+    int signInd = 0;
+    int cnt = 0;
+    for (int i = 0; i < exp.size(); i++){
+        if (!isdigit(exp[i])) {
+            signInd = i;
+            cnt++;
+        }
+    }
+    if (cnt == 0)
+      return stoi(exp);
+
+    if (cnt != 1 || signInd == 0 || signInd == exp.size() - 1)
+        return -1;
+    return strToInt(exp[signInd],exp.substr(0, signInd), exp.substr(signInd + 1, exp.size() - 1 - signInd));
+}
+
+int parsing::strToInt(char sign, string oper1, string oper2) {
+    switch (sign) {
+        case '+' : return stoi(oper1) + stoi(oper2);
+        case '-' : return stoi(oper1) - stoi(oper2);
+        case '*' : return stoi(oper1) * stoi(oper2);
+        case '/' : return stoi(oper1) / stoi(oper2);
+        default  : return -1;
+    }
+}
+
 bool parsing::isValid() {
   return valid;
 }
-// int main() {
-// 	cout << "kamal" << endl;
-// }
