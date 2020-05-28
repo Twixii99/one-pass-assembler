@@ -54,6 +54,7 @@ using namespace std;
        cout << data1 << ' ' << data2 << '\n';
        long long curraddress = 0;
        stringstream strs;
+       strs.str("");
      if(is_number(data2)){
        //flags &= 61;
        curraddress = stoi(data2);
@@ -70,14 +71,19 @@ using namespace std;
        else {
         strs << (syu->address);
         strs >> curraddress;
+        strs.str("");
        }
 
     }
     long long objectCode=0;
     long long lopcode,lcurr;
-    strs<<hex<<opcode;
-    strs>>lopcode;
+    //std::string s = "0xfffefffe";
+    lopcode = std::stoul(opcode, nullptr, 16);
+   /* strs.str("");
+    strs << hex <<opcode;
+    strs >> lopcode;*/
     cout<<lopcode<<" opp1"<<endl;
+
     if ((flags & (1 << 4)) != 0 && numofbites != 2)
         lopcode++;
     if ((flags & (1 << 5)) != 0 && numofbites != 2)
@@ -86,13 +92,14 @@ using namespace std;
    // cout << currtext << endl;
         strs.clear();
 
+    strs.str("");
     strs<<setw(2)<<setfill('0')<<hex<<lopcode;
     string sol;
     strs >> sol;
+
     currtext+=sol;
     cout << currtext << "here 1" << endl;
    // cout<<"sda"<<lopcode<<endl;
-    strs.clear();
     if (numofbites == 3){
         for (int i = 0; i <= 3; i++){
             if ((flags & (1 << i)) != 0)
@@ -107,11 +114,12 @@ using namespace std;
     }
     objectCode |= curraddress;
 
-    cout << objectCode << "here 2" << endl;
-
-
-      strs<<setw(4)<<setfill('0')<<hex<<objectCode;
-      strs >> sol;
+      cout << objectCode << "here 2" << endl;
+      stringstream str2;
+      //sol = "";
+      str2<<setw(4)<<setfill('0')<<hex<<objectCode;
+      str2 >> sol;
+      //sprintf(sol, "%X", objectCode);
       currtext+=sol;
       length+=numofbites;
     }
@@ -142,32 +150,40 @@ string ToHex(const string& s, bool upper_case /* = true */)
 
 void Textcodes::addText(std::vector<std::string> data, int locctr)
 {
+
     if (data[1] == "RESW" || data[1] == "RESB")
     {
         if (length != 0) {
             cout << tostring() << '\n';
-            newText(locctr + stoi(data[2]));
         }
+        if (data[1] == "RESW")
+            newText(locctr + 3 * stoi(data[2]));
+        else
+            newText(locctr +  stoi(data[2]));
     }
     else {
         if (data[1] == "WORD")
         {
-            stringstream stream;
-            stream << setw(6) << setfill('0') << hex <<data[2];
-            currtext += "^" + stream.str();
+            stringstream streamo;
+            streamo << setw(6) << setfill('0') << hex << data[2];
+         //   cout << data[2] << ' ' << stream.str() << "******&&&&&&&&&&&&&&&&&&&&&" << endl;
+            string ans;
+            streamo >> ans;
+            streamo.str("");
+            currtext += "^" + ans;
             length += 3;
         }
         else {
-            string hex;
+            string hexa;
             if (data[2][0] == 'C' || data[2][0] == 'c')
             {
-                hex = ToHex(data[2].substr(2, data[2].size() - 3), true);
+                hexa = ToHex(data[2].substr(2, data[2].size() - 3), true);
             }
             else {
-                hex = data[2].substr(2, data[2].size() - 3);
+                hexa = data[2].substr(2, data[2].size() - 3);
             }
-            currtext += "^" + hex;
-            length += (hex.size() / 2);
+            currtext += "^" + hexa;
+            length += (hexa.size() / 2);
         }
     }
 }

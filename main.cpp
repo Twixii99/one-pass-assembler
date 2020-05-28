@@ -24,13 +24,15 @@ using namespace std;
 // bool isderctive(string s);
 // bool is_valid(vector<string> data);
 // bool label_validaty_checker(string str);
+void increasingloccnt(vector<string> &statement);
+bool dataGenerationDirective(string oper);
 const int DEFAULT_BLOCK = 0;
 const int DEFAULT_CSEC = 0;
 
 const string default_name = "DEFAULT"; // if the programmer didn't set a name for the program.
 
-int lineNO = 0;
-int current_line = 0;
+int lineNO = 1;
+int current_line = 1;
 
 int blocksNo = 1;
 int current_block = 0;
@@ -40,109 +42,75 @@ int current_CSEC = 0;
 
 int loccnt = 0;
 
+bool codevalide=true;
+bool pcUse;
+
 int base_register = 0;
 bool base_used = false;
 
 int pc_register = 0;
 bool pc_used = false;
 
+TextRecordFactory* fac = nullptr;
+Opcodes* operations = nullptr;
+Symtable* sys = nullptr;
+parsing par;
 int main()
 {
-    Opcodes* operations = Opcodes::getInstance();
-    Symtable* sys = Symtable::getInstance();
-  	sys->insert("COPY", 78);
-  	Sym* syu = sys->getSymbol("COPY");
-  	cout << syu-> name << "\t" << syu->address << endl;
-    vector<string> tt;
-    tt.push_back(""); tt.push_back("LDS");tt.push_back("ALPHA");
-    parsing par;
-    par.display(tt);
-    cout<<par.modesaddress<<"  "<<par.numofBytes<<endl;
-    TextRecordFactory* fac =TextRecordFactory::getInstance();
-    fac->addTextRecord(tt,1000,par.modesaddress,par.numofBytes);
-    tt.clear();
-    tt.push_back(""); tt.push_back("LDA");tt.push_back("ALPHA");
-    par.display(tt);
-    cout<<par.modesaddress<<"  "<<par.numofBytes<<endl;
-    fac->addTextRecord(tt,1003,par.modesaddress,par.numofBytes);
-
-
-  fstream source_file {"source.txt", ios::in}; // object for the input file.
-    // checking if the source file opened succesfully.
-    if(!source_file) {
-        cout << "failed to open the source code file";
-        exit(EXIT_FAILURE);
-    }
-   string line;
-   vector<string> data;
-     while(getline(source_file, line)) {
-      stringstream data_line(line);
-        for(string s; data_line >> s; ){
-        transform(s.begin(), s.end(), s.begin(), ::toupper );
-            if(data.empty() && ( par.isDirective(s) || operations->getopcode(s)!= "null" ) )
-               data.push_back("");
-            data.push_back(s); }
-           if(data.size()<3) data.push_back("");
-           cout<<data[0]<<" " <<data[1]<<" "<<data[2]<<endl;
-        
-         
-         if(data[0] != "null"){
-            if(sys->getSymbol(data[0]) == nullptr || sys->getSymbol(data[0])->address =="*" ){
-
-                sys->insert(data[0],"1000",true,0,0 );
-            }
-         }
-         if(data[2]!= ""){
-            if(sys->getSymbol(data[2]) == nullptr ){
-                sys->insert(data[2],loccnt);
-                cout<<"maain"<<endl;
-                cout<<sys->getSymbol(data[2])->address <<"add"<<endl;
-            }
-          }
-          par.display(data);
-          cout<<par.modesaddress<<"  "<<par.numofBytes<<endl;
-          if(par.isValid())
-            fac->addTextRecord(data,loccnt,par.modesaddress,par.numofBytes);
-           data.clear();
-    }
-   
-/*
+    operations = Opcodes::getInstance();
+    sys = Symtable::getInstance();
+    fac =TextRecordFactory::getInstance();
+    
     fstream source_file {"source.txt", ios::in}; // object for the input file.
     // checking if the source file opened succesfully.
     if(!source_file) {
-        cout << "failed to open the source code file";
         exit(EXIT_FAILURE);
     }
-    // defining sting to take line by line from the source program.
+    ofstream objcode,looping,opsymtab;
+    objcode.open("output.txt");looping.open("looping.txt");opsymtab.open("opsymtab.txt");
     string line;
-    /**
-     * vector contains main data.
-     * label = vector.at(0).
-     * operator = vector.at(1).
-     * operand = vector.at(2).
-    */
-   /* vector<string> data;
+    vector<string> data;
     while(getline(source_file, line)) {
-        stringstream data_line(line);
-        for(string s; data_line >> s; ){
-            if(data.empty() || (isderctive(s) operations->getopcode(s)!= nullptr ) )
-               data.push_back("");
-            data.push_back(s); }
-        if(data.size() > 3)
-            if(data.at(3).at(0) != data.at(3).at(1))
-                printErrorMessage();
-        if(data.size()<3) data.push_back("");
-        if(data.at(0).at(0) == '.') {
-            data.clear();
-            continue;
+      stringstream data_line(line);
+      for(string s; data_line >> s; ) {
+        transform(s.begin(), s.end(), s.begin(), ::toupper);
+        if(data.empty() && (par.isDirective(s) || operations->getopcode(s)!= "null" || s[0]=='+'))
+          data.push_back("");
+        data.push_back(s); 
+      }
+      if(data.size() < 3) data.push_back("");
+      int x = par.parseExpression(data[2]);                   ///////////////        3lem
+      if(x != -1) data[2] = to_string(x);
+      string data2,data1;
+      if (data[1] !="" && data[1][0]=='+') 
+      {
+        data1=data[1].substr(1);
+      }
+      if(data[0] != "") {
+        if(sys->getSymbol(data[0]) == nullptr || sys->getSymbol(data[0])->address =="*" ){
+          sys->insert(data[0],to_string(loccnt),true,0,0);
+          opsymtab<<data[0]<<"    "<<loccnt<<endl;
+        }else{
+            codevalide=false;
         }
-        data.clear();
-        ++lineNO;
-    } */
-  //  cout << operations << endl;
-    // Opcodes* ass = Opcodes::getInstance();
-   // cout << ass << endl;
-  //  cout << ass->getopcode("LDSs") << endl;
+      }
+      if(data[2]!= ""  ) {
+         data2=data[2];
+        if(data[2][0] == '@' || data[2][0]=='#')
+           data2 = data[2].substr(1);
+        if(isalpha(data2[0]) && sys->getSymbol(data2) == nullptr) { 
+            sys->insert(data2,loccnt);
+            opsymtab<<data[2] <<"   "<<"*"<<endl; 
+        } else codevalide=false; 
+      }
+      par.display(data);
+      if(par.isValid() && (!par.directive || (par.directive &&  dataGenerationDirective(data1))))
+        fac->addTextRecord(data,loccnt,par.modesaddress,par.numofBytes);
+
+      looping <<lineNO<<"    "<<loccnt<<"      " << data[0]<<"   "<<data[1]<<"   "<<data[2]<<endl;
+      increasingloccnt(data);
+      data.clear();
+  }
     return 0;
 }
 
@@ -177,8 +145,47 @@ bool isderctive(string s ){
 }
 
 
-
+*/
 
 void printErrorMessage() {
     cerr << "there may be an error in line " << ::lineNO << '.' << endl;
-}*/
+}
+
+void increasingloccnt(vector<string> &statement) {
+    if(par.isDirective(statement[1])) {
+        if(par.isValid())
+          if(statement[1] == "START") {
+            loccnt = par.display(statement);
+            if(loccnt == 0)
+              pcUse = 1;
+          }
+          if(statement[1] == "RESW" || statement[1] == "WORD" || statement[1] == "RESB" || statement[1] == "BYTE")
+            loccnt += par.display(statement);
+          else if(statement[1] == "ORG") {
+            if(statement[1][0] > 64 && statement[1][0] < 91) {
+              if(sys->getSymbol(statement[2]) != nullptr)
+                loccnt = stoi(sys->getSymbol(statement[2])->address);
+              else {
+                codevalide = false;
+              }
+            } else {
+              loccnt = stoi(statement[2]);
+            }
+          } else if(statement[1] == "EQU") {
+              if(sys->getSymbol(statement[2]) != nullptr)
+                codevalide = false;
+              else 
+                sys->insert(statement[0], statement[2], true, 0, 0);
+          }
+    } else {
+      loccnt += par.display(statement);
+    }
+}
+
+bool dataGenerationDirective(string oper)
+{
+    if (oper == "BYTE" || oper == "WORD" || oper == "RESW" || oper == "RESB")
+        return true;
+    else
+        return false;
+}
