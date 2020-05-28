@@ -19,11 +19,11 @@
 
 using namespace std;
 
-bool caseInSensStringCompareCpp11(string str1, string str2);
-void printErrorMessage();
-bool isderctive(string s);
-bool is_valid(vector<string> data);
-bool label_validaty_checker(string str);
+// bool caseInSensStringCompareCpp11(string str1, string str2);
+// void printErrorMessage();
+// bool isderctive(string s);
+// bool is_valid(vector<string> data);
+// bool label_validaty_checker(string str);
 const int DEFAULT_BLOCK = 0;
 const int DEFAULT_CSEC = 0;
 
@@ -46,46 +46,28 @@ bool base_used = false;
 int pc_register = 0;
 bool pc_used = false;
 
-// how labels should be represented
-struct label_data {
-    string address;
-    bool absolute;
-    int control_section;
-    int program_block;
-    list<string> operands_need_this_label;
-
-    label_data(string address, bool absolute) {
-        this->address = address;
-        this->absolute = absolute;
-    }
-
-    void setLabel(string label) {
-        this->operands_need_this_label.push_back(label);
-    }
-};
-
-unordered_map<string, label_data> labels;        // symbol table
-Opcodes* operations = Opcodes::getInstance();
-
 int main()
 {
- Symtable* sys = Symtable::getInstance();
-	sys->insert("COPY");
-	Sym* syu = sys->getSymbol("COPY");
-//	cout << syu-> name << "\t" << syu->address << endl;
+    Opcodes* operations = Opcodes::getInstance();
+    Symtable* sys = Symtable::getInstance();
+  	sys->insert("COPY", 78);
+  	Sym* syu = sys->getSymbol("COPY");
+  	cout << syu-> name << "\t" << syu->address << endl;
+    vector<string> tt;
+    tt.push_back(""); tt.push_back("LDS");tt.push_back("ALPHA");
+    parsing par;
+    par.display(tt);
+    cout<<par.modesaddress<<"  "<<par.numofBytes<<endl;
+    TextRecordFactory* fac =TextRecordFactory::getInstance();
+    fac->addTextRecord(tt,1000,par.modesaddress,par.numofBytes);
+    tt.clear();
+    tt.push_back(""); tt.push_back("LDA");tt.push_back("ALPHA");
+    par.display(tt);
+    cout<<par.modesaddress<<"  "<<par.numofBytes<<endl;
+    fac->addTextRecord(tt,1003,par.modesaddress,par.numofBytes);
 
-  vector<string> tt;
-  tt.push_back(""); tt.push_back("LDS");tt.push_back("ALPHA");
-     parsing par(tt);
-  TextRecordFactory* fac =TextRecordFactory::getInstance();
-  fac->addTextRecord(tt,1000,par.modesaddress,par.numofBytes);
-  tt.clear();
-  tt.push_back(""); tt.push_back("LDA");tt.push_back("ALPHA");
-   parsing par2(tt);
-  fac->addTextRecord(tt,1003,par2.modesaddress,par2.numofBytes);
 
-
- /* fstream source_file {"source.txt", ios::in}; // object for the input file.
+  fstream source_file {"source.txt", ios::in}; // object for the input file.
     // checking if the source file opened succesfully.
     if(!source_file) {
         cout << "failed to open the source code file";
@@ -93,21 +75,37 @@ int main()
     }
    string line;
    vector<string> data;
-    while(getline(source_file, line)) {
-        stringstream data_line(line);
+     while(getline(source_file, line)) {
+      stringstream data_line(line);
         for(string s; data_line >> s; ){
         transform(s.begin(), s.end(), s.begin(), ::toupper );
-            if(data.empty() && ( isderctive(s) || operations->getopcode(s)!= "null" ) )
+            if(data.empty() && ( par.isDirective(s) || operations->getopcode(s)!= "null" ) )
                data.push_back("");
             data.push_back(s); }
            if(data.size()<3) data.push_back("");
            cout<<data[0]<<" " <<data[1]<<" "<<data[2]<<endl;
-         parsing par(data);
+        
+         
+         if(data[0] != "null"){
+            if(sys->getSymbol(data[0]) == nullptr || sys->getSymbol(data[0])->address =="*" ){
 
-
+                sys->insert(data[0],"1000",true,0,0 );
+            }
+         }
+         if(data[2]!= ""){
+            if(sys->getSymbol(data[2]) == nullptr ){
+                sys->insert(data[2],loccnt);
+                cout<<"maain"<<endl;
+                cout<<sys->getSymbol(data[2])->address <<"add"<<endl;
+            }
+          }
+          par.display(data);
+          cout<<par.modesaddress<<"  "<<par.numofBytes<<endl;
+          if(par.isValid())
+            fac->addTextRecord(data,loccnt,par.modesaddress,par.numofBytes);
            data.clear();
     }
-   */
+   
 /*
     fstream source_file {"source.txt", ios::in}; // object for the input file.
     // checking if the source file opened succesfully.
@@ -142,13 +140,13 @@ int main()
         ++lineNO;
     } */
   //  cout << operations << endl;
-    Opcodes* ass = Opcodes::getInstance();
+    // Opcodes* ass = Opcodes::getInstance();
    // cout << ass << endl;
   //  cout << ass->getopcode("LDSs") << endl;
     return 0;
 }
 
-bool label_validaty_checker(string str) {
+/*bool label_validaty_checker(string str) {
     return (isdigit(str.at(0)) ? false : true);
 }
 
@@ -183,4 +181,4 @@ bool isderctive(string s ){
 
 void printErrorMessage() {
     cerr << "there may be an error in line " << ::lineNO << '.' << endl;
-}
+}*/
