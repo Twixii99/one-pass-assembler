@@ -19,6 +19,7 @@ class parsing {
    int parseExpression(std::string exp);
    int display(std::vector<std::string> &statement);
    int numofBytes,locc; long long modesaddress;
+   bool directive;
    bool isValid();
    bool isDirective(std::string);
 };

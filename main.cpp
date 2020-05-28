@@ -25,6 +25,7 @@ using namespace std;
 // bool is_valid(vector<string> data);
 // bool label_validaty_checker(string str);
 void increasingloccnt(vector<string> &statement);
+bool dataGenerationDirective(string oper);
 const int DEFAULT_BLOCK = 0;
 const int DEFAULT_CSEC = 0;
 
@@ -63,7 +64,6 @@ int main()
     fstream source_file {"source.txt", ios::in}; // object for the input file.
     // checking if the source file opened succesfully.
     if(!source_file) {
-        cout << "failed to open the source code file";
         exit(EXIT_FAILURE);
     }
     ofstream objcode,looping,opsymtab;
@@ -79,7 +79,6 @@ int main()
         data.push_back(s); 
       }
       if(data.size() < 3) data.push_back("");
-      cout<<data[0]<<" " <<data[1]<<" "<<data[2]<<endl;
       int x = par.parseExpression(data[2]);                   ///////////////        3lem
       if(x != -1) data[2] = to_string(x);
       string data2,data1;
@@ -96,27 +95,22 @@ int main()
         }
       }
       if(data[2]!= ""  ) {
-         cout<<"**************" << data[2] << "**********"<<endl; 
          data2=data[2];
         if(data[2][0] == '@' || data[2][0]=='#')
            data2 = data[2].substr(1);
         if(isalpha(data2[0]) && sys->getSymbol(data2) == nullptr) { 
             sys->insert(data2,loccnt);
             opsymtab<<data[2] <<"   "<<"*"<<endl; 
-            cout<<"**************"<<endl; 
         } else codevalide=false; 
       }
       par.display(data);
-      cout<<par.modesaddress<<"  "<<par.numofBytes<<endl;
-      if(par.isValid())
+      if(par.isValid() && (!par.directive || (par.directive &&  dataGenerationDirective(data1))))
         fac->addTextRecord(data,loccnt,par.modesaddress,par.numofBytes);
 
       looping <<lineNO<<"    "<<loccnt<<"      " << data[0]<<"   "<<data[1]<<"   "<<data[2]<<endl;
-      data.clear();
       increasingloccnt(data);
+      data.clear();
   }
-   
-
     return 0;
 }
 
@@ -186,4 +180,12 @@ void increasingloccnt(vector<string> &statement) {
     } else {
       loccnt += par.display(statement);
     }
+}
+
+bool dataGenerationDirective(string oper)
+{
+    if (oper == "BYTE" || oper == "WORD" || oper == "RESW" || oper == "RESB")
+        return true;
+    else
+        return false;
 }

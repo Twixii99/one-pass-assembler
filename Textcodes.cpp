@@ -142,18 +142,23 @@ string ToHex(const string& s, bool upper_case /* = true */)
 
 void Textcodes::addText(std::vector<std::string> data, int locctr)
 {
+  
     if (data[1] == "RESW" || data[1] == "RESB")
     {
         if (length != 0) {
             cout << tostring() << '\n';
-            newText(locctr + stoi(data[2]));
+            if (data[1] == "RESW")
+              newText(locctr + 3 * stoi(data[2]));
+            else
+              newText(locctr +  stoi(data[2]));
         }
     }
     else {
         if (data[1] == "WORD")
         {
             stringstream stream;
-            stream << setw(6) << setfill('0') << hex <<data[2];
+            stream << setw(6) << setfill('0') << hex << data[2];
+            cout << data[2] << ' ' << stream.str() << "******&&&&&&&&&&&&&&&&&&&&&" << endl;
             currtext += "^" + stream.str();
             length += 3;
         }

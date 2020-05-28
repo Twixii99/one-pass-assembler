@@ -48,6 +48,7 @@ void parsing::clear() {
   parsing::numofBytes = 0; 
   parsing::modesaddress = 0;
   parsing::locc = 0;
+  parsing::directive = 0;
 }
 
 parsing::parsing() {}
@@ -57,7 +58,7 @@ int parsing::display(vector<string> &statement) {
 	string str = statement[1];
 	if(parsing::isDirective(str)) {
 		parseDirective(statement);
-		parsing::valid = false;
+    parsing::directive = true;
     return parsing::locc;
 	}
 	else {
@@ -65,7 +66,7 @@ int parsing::display(vector<string> &statement) {
 		  str = statement[1].substr(1);
 		valid = Opcodes::getInstance()->getopcode(str) == "null" ? false : true;
 	}
-	if(parsing::valid) {
+	if(parsing::valid && !directive) {
 		setnumofBytes(statement);
 		if(numofBytes != 2)
 		setaddressmode(statement);
@@ -181,16 +182,18 @@ void parsing::parseDirective(vector<string> &statement) {
 			return;
 		}
 	}
-	else if(statement[1] == "ORG")
+	else if(statement[1] == "ORG") {
 		if(statement[2] == "" || !(statement[0] == "")) {
 			parsing:valid = 0;
 			return;
 		}
-	else if(statement[1] == "EQU")
+  }
+	else if(statement[1] == "EQU") {
 		if(statement[0] == "" || statement[2] == "") {
 			parsing::valid = 0;
 			return;
 		}
+  }
 }
 
 int parsing::parseExpression(string exp) {
