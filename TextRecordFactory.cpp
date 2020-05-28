@@ -32,7 +32,7 @@ Sym* TextRecordFactory::modifyPrevAddress(string label) {
     Symtable* table = Symtable::getInstance();
     Sym* symb = table->getSymbol(label);
 
-    if (symb == nullptr || symb->address != "*" || symb->operandsNeedThisLabel.size() == 0)
+    if (symb == nullptr || symb->operandsNeedThisLabel.size() == 0)
         return nullptr;
 
     return symb;

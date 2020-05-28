@@ -35,14 +35,14 @@ unordered_map<string, string> directives = {
   {"ORG", ""},           // done
 };
 
-bool isDirective(string s){
+bool parsing::isDirective(string s){
   unordered_map<string, string>::const_iterator got = directives.find(s);
   if(got != directives.end())
     return true;
   return false;
 }
 
-parsing::parsing() {
+void parsing::clear() {
   parsing::valid = true; 
   parsing::pcrel = true;  
   parsing::numofBytes = 0; 
@@ -50,18 +50,24 @@ parsing::parsing() {
   parsing::locc = 0;
 }
 
+parsing::parsing() {
+  parsing::clear();
+}
+
 int parsing::display(vector<string> &statement) {
+  parsing::clear();
 	string str = statement[1];
-	if(::isDirective(str)) {
+	if(parsing::isDirective(str)) {
 		parseDirective(statement);
 		parsing::valid = false;
 	}
 	else {
-		if(statement[1][0] != '+')
+		if(statement[1][0] == '+')
 		  str = statement[1].substr(1);
-		valid = Opcodes::getInstance()->getopcode(str) != "null" ? true : false;
+		valid = Opcodes::getInstance()->getopcode(str) == "null" ? false : true;
 	}
 	if(parsing::valid) {
+    cout << "Kamola" << endl;
 		setnumofBytes(statement);
 		if(numofBytes != 2)
 		  setaddressmode(statement);
@@ -85,7 +91,7 @@ void parsing::checkParsing(vector<string> &statement) {
      	valid = false;
 }
 
-void  parsing::setnumofBytes(vector<string> &statement) {
+void  parsing::setnumofBytes(vector<string> &statement) { 
   if (statement[1][0] == '+')
      parsing::numofBytes = 4;
   else if (statement[1][statement[1].size()-1] == 'r' || statement[1][statement[1].size()-1] == 'R' || statement[1] == "RMO")
@@ -130,6 +136,7 @@ void parsing::setaddressmode(vector<string> &statement) {
 }
  
 void parsing::parseDirective(vector<string> &statement) {
+  cout << "FROM directives"<<endl;
 	if(statement[1] == "START")
 		parsing::locc = !(statement[2] == "") ? regex_match(statement[0], r) ? stoi(statement[1]) : 0 : 0;
 	else if(statement[1] == "RESW" || statement[1] == "RESB" || statement[1] == "BYTE" || statement[1] == "WORD") {
@@ -177,3 +184,10 @@ void parsing::parseDirective(vector<string> &statement) {
 			return;
 		}
 }
+
+bool parsing::isValid() {
+  return valid;
+}
+// int main() {
+// 	cout << "kamal" << endl;
+// }

@@ -40,7 +40,8 @@ using namespace std;
         string data1 = data[1];
        if(numofbites == 4)
             data1 = data1.substr(1, data1.size() - 1);
-       string opcode = opcod->getopcode(data[1]);
+       string opcode = opcod->getopcode(data1);
+       cout<<"  "<<opcode << endl;
        currtext+="^";
 
        Symtable* sys = Symtable::getInstance();
@@ -50,22 +51,25 @@ using namespace std;
        if (data2.size() > 2 && data2[data2.size() - 1] == 'X' && data2[data2.size() - 2] == ',') {
            data2 = data2.substr(0, data2.size() - 2);
        }
-       int curraddress = 0;
+       cout << data1 << ' ' << data2 << '\n';
+       long long curraddress = 0;
        stringstream strs;
      if(is_number(data2)){
-        strs << data2;
-       strs >>curraddress;
+       //flags &= 61;
+       curraddress = stoi(data2);
+       cout << curraddress << "Makram" <<'\n';
 
      }else{
 
-        Sym* syu = sys->getSymbol(data[2]);
-       if( syu == nullptr  ){
+        Sym* syu = sys->getSymbol(data2);
+       if( syu == nullptr || syu->address == "*"){
         curraddress = 0;
         flags &= 61;
+        cout<<"symm"<<endl;
        }
        else {
-        strs<< (syu->address);
-        strs>>curraddress;
+        strs << (syu->address);
+        strs >> curraddress;
        }
 
     }
@@ -73,10 +77,12 @@ using namespace std;
     long long lopcode,lcurr;
     strs<<hex<<opcode;
     strs>>lopcode;
+    cout<<lopcode<<" opp1"<<endl;
     if ((flags & (1 << 4)) != 0 && numofbites != 2)
         lopcode++;
     if ((flags & (1 << 5)) != 0 && numofbites != 2)
         lopcode+=2;
+    cout<<lopcode<<" opp2"<<endl;
    // cout << currtext << endl;
         strs.clear();
 
@@ -84,6 +90,7 @@ using namespace std;
     string sol;
     strs >> sol;
     currtext+=sol;
+    cout << currtext << "here 1" << endl;
    // cout<<"sda"<<lopcode<<endl;
     strs.clear();
     if (numofbites == 3){
@@ -98,12 +105,15 @@ using namespace std;
                 objectCode |= (1 << (i + 20));
          }
     }
+    objectCode |= curraddress;
+
+    cout << objectCode << "here 2" << endl;
 
 
-     strs<<setw(4)<<setfill('0')<<hex<<objectCode;
-     strs >> sol;
-     currtext+=sol;
-        length+=numofbites;
+      strs<<setw(4)<<setfill('0')<<hex<<objectCode;
+      strs >> sol;
+      currtext+=sol;
+      length+=numofbites;
     }
 void Textcodes::addText(std::vector<std::string> data, Sym* label) {
 

@@ -5,19 +5,21 @@
 #include <string>
 
 
-class parsing{
+class parsing {
 
- void display(std::vector<std::string> &statement);
  void setnumofBytes( std::vector<std::string> &statement);
  void setaddressmode( std::vector<std::string> &statement);
  void checkParsing( std::vector<std::string> &statement);
  void parseDirective(std::vector<std::string> &statement);
+ void clear();
  bool valid,pcrel ;
  public:
+   parsing();
+   int display(std::vector<std::string> &statement);
    int numofBytes,locc; long long modesaddress;
-   parsing(std::vector<std::string> &statement);
-
-
+   bool isValid();
+   bool isDirective(std::string);
 };
+
 #endif
 
