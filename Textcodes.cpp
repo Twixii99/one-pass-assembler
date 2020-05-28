@@ -130,11 +130,52 @@ void Textcodes::addText(std::vector<std::string> data, Sym* label) {
     }
 }
 
+string ToHex(const string& s, bool upper_case /* = true */)
+{
+    ostringstream ret;
+
+    for (string::size_type i = 0; i < s.length(); ++i)
+        ret << std::hex << std::setfill('0') << std::setw(2) << (upper_case ? std::uppercase : std::nouppercase) << (int)s[i];
+
+    return ret.str();
+}
+
+void Textcodes::addText(std::vector<std::string> data, int locctr)
+{
+    if (data[1] == "RESW" || data[1] == "RESB")
+    {
+        if (length != 0) {
+            cout << tostring() << '\n';
+            newText(locctr + stoi(data[2]));
+        }
+    }
+    else {
+        if (data[1] == "WORD")
+        {
+            stringstream stream;
+            stream << setw(6) << setfill('0') << hex <<data[2];
+            currtext += "^" + stream.str();
+            length += 3;
+        }
+        else {
+            string hex;
+            if (data[2][0] == 'C' || data[2][0] == 'c')
+            {
+                hex = ToHex(data[2].substr(2, data[2].size() - 3), true);
+            }
+            else {
+                hex = data[2].substr(2, data[2].size() - 3);
+            }
+            currtext += "^" + hex;
+            length += (hex.size() / 2);
+        }
+    }
+}
+
  string Textcodes::tostring()
   {
         stringstream stemp;
         stemp<<setw(2)<<setfill('0')<<hex<<length;
         return start+ stemp.str()+"^" +currtext;
-
   }
 

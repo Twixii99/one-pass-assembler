@@ -13,6 +13,14 @@ using namespace std;
 
 TextRecordFactory* TextRecordFactory::textRecFactory  = nullptr;
 
+bool dataGenerationDirectives(string oper)
+{
+    if (oper == "BYTE" || oper == "WORD" || oper == "RESW" || oper == "RESB")
+        return true;
+    else
+        return false;
+}
+
 TextRecordFactory::TextRecordFactory(){
 
     textRecord = new Textcodes();
@@ -41,7 +49,11 @@ void TextRecordFactory::addTextRecord(const vector<string>& statement, int locct
 
     int status = 0;
     Sym* symb = modifyPrevAddress(statement.at(0));
-    if (symb != nullptr)
+    if (dataGenerationDirectives(statement[1]))
+    {
+        textRecord->addText(statement, locctr);
+    }
+    else if (symb != nullptr)
     {
         if (textRecord->length > 0) {
             cout << textRecord->tostring() << '\n';
