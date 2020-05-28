@@ -135,9 +135,8 @@ void parsing::setaddressmode(vector<string> &statement) {
 }
 
 void parsing::parseDirective(vector<string> &statement) {
-  cout << "FROM directives"<<endl;
 	if(statement[1] == "START")
-		parsing::locc = !(statement[2] == "") ? regex_match(statement[0], r) ? stoi(statement[1]) : 0 : 0;
+		parsing::locc = !(statement[2] == "") ? regex_match(statement[0], r) ? std::stoul(statement[2], nullptr, 16) : 0 : 0;
 	else if(statement[1] == "RESW" || statement[1] == "RESB" || statement[1] == "BYTE" || statement[1] == "WORD") {
 		if(statement[2] == "" || statement[0] == "") {
 			parsing::valid = 0;

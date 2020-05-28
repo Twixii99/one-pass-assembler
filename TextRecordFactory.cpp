@@ -47,13 +47,22 @@ Sym* TextRecordFactory::modifyPrevAddress(string label) {
 }
 void TextRecordFactory::addTextRecord(const vector<string>& statement, int locctr,long long flags,int numofbites ){
 
-    cout << statement[1] << "***************************" <<  '\n';
+    //cout << statement[1] << "***************************" <<  '\n';
     int status = 0;
     Sym* symb = modifyPrevAddress(statement.at(0));
     if (dataGenerationDirectives(statement[1]))
     {
-        cout << "First If******************************"<<endl;
+      //  cout << "First If******************************"<<endl;
+
         textRecord->addText(statement, locctr);
+        if (symb != nullptr)
+        {
+            if (textRecord->length > 0) {
+            cout << textRecord->tostring() << '\n';
+            }
+            textRecord->addText(statement, symb);
+            textRecord->newText(locctr);
+        }
     }
     else if (symb != nullptr)
     {

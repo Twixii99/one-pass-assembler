@@ -60,7 +60,7 @@ int main()
     operations = Opcodes::getInstance();
     sys = Symtable::getInstance();
     fac =TextRecordFactory::getInstance();
-    
+
     fstream source_file {"source.txt", ios::in}; // object for the input file.
     // checking if the source file opened succesfully.
     if(!source_file) {
@@ -76,13 +76,14 @@ int main()
         transform(s.begin(), s.end(), s.begin(), ::toupper);
         if(data.empty() && (par.isDirective(s) || operations->getopcode(s)!= "null" || s[0]=='+'))
           data.push_back("");
-        data.push_back(s); 
+        data.push_back(s);
       }
       if(data.size() < 3) data.push_back("");
       int x = par.parseExpression(data[2]);                   ///////////////        3lem
       if(x != -1) data[2] = to_string(x);
       string data2,data1;
-      if (data[1] !="" && data[1][0]=='+') 
+      data1 = data[1];
+      if (data[1] !="" && data[1][0]=='+')
       {
         data1=data[1].substr(1);
       }
@@ -98,10 +99,10 @@ int main()
          data2=data[2];
         if(data[2][0] == '@' || data[2][0]=='#')
            data2 = data[2].substr(1);
-        if(isalpha(data2[0]) && sys->getSymbol(data2) == nullptr) { 
-            sys->insert(data2,loccnt);
-            opsymtab<<data[2] <<"   "<<"*"<<endl; 
-        } else codevalide=false; 
+        if(isalpha(data2[0]) && sys->getSymbol(data2) == nullptr) {
+            sys->insert(data2, loccnt);
+            opsymtab<<data[2] <<"   "<<sys->getSymbol(data2)->operandsNeedThisLabel.size()<<endl;
+        } else codevalide=false;
       }
       par.display(data);
       if(par.isValid() && (!par.directive || (par.directive &&  dataGenerationDirective(data1))))
@@ -174,7 +175,7 @@ void increasingloccnt(vector<string> &statement) {
           } else if(statement[1] == "EQU") {
               if(sys->getSymbol(statement[2]) != nullptr)
                 codevalide = false;
-              else 
+              else
                 sys->insert(statement[0], statement[2], true, 0, 0);
           }
     } else {

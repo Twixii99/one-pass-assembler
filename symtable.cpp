@@ -17,21 +17,30 @@ Symtable* Symtable::getInstance() {
 }
 
 void Symtable::insert(string symbol, int loccnt) {
-	Sym* sym = new Sym();
-	sym->name = symbol;
-	sym->address = "*";
-	sym->operandsNeedThisLabel.push_back(to_string(loccnt));
-	symtable[symbol] = sym;
+    Sym* got = getSymbol(symbol);
+    if(got == nullptr) {
+        Sym* sym = new Sym();
+        sym->name = symbol;
+        sym->address = "*";
+        sym->operandsNeedThisLabel.push_back(to_string(loccnt));
+        symtable[symbol] = sym;
+    }
+    else
+        got->operandsNeedThisLabel.push_back(to_string(loccnt));
 }
 
 void Symtable::insert(std::string symbol, std::string address, bool abs, int block, int sec) {
-	Sym* sym = new Sym();
-	sym->name = symbol;
-	sym->address = address;
-	sym->absolute = abs;
-	sym-> control_section = sec;
-	sym -> program_block = block;
-	symtable[symbol] = sym;
+
+	Sym* sym = getSymbol(symbol);
+	if (sym == nullptr){
+        sym = new Sym();
+        symtable[symbol] = sym;
+	}
+    sym->name = symbol;
+    sym->address = address;
+    sym->absolute = abs;
+    sym-> control_section = sec;
+    sym -> program_block = block;
 }
 
 Sym* Symtable::getSymbol(string symbol) {

@@ -41,7 +41,7 @@ using namespace std;
        if(numofbites == 4)
             data1 = data1.substr(1, data1.size() - 1);
        string opcode = opcod->getopcode(data1);
-       cout<<"  "<<opcode << endl;
+       //cout<<"  "<<opcode << endl;
        currtext+="^";
 
        Symtable* sys = Symtable::getInstance();
@@ -51,14 +51,14 @@ using namespace std;
        if (data2.size() > 2 && data2[data2.size() - 1] == 'X' && data2[data2.size() - 2] == ',') {
            data2 = data2.substr(0, data2.size() - 2);
        }
-       cout << data1 << ' ' << data2 << '\n';
+       //cout << data1 << ' ' << data2 << '\n';
        long long curraddress = 0;
        stringstream strs;
        strs.str("");
      if(is_number(data2)){
        //flags &= 61;
        curraddress = stoi(data2);
-       cout << curraddress << "Makram" <<'\n';
+       //cout << curraddress << "Makram" <<'\n';
 
      }else{
 
@@ -66,7 +66,7 @@ using namespace std;
        if( syu == nullptr || syu->address == "*"){
         curraddress = 0;
         flags &= 61;
-        cout<<"symm"<<endl;
+       // cout<<"symm"<<endl;
        }
        else {
         strs << (syu->address);
@@ -82,13 +82,13 @@ using namespace std;
    /* strs.str("");
     strs << hex <<opcode;
     strs >> lopcode;*/
-    cout<<lopcode<<" opp1"<<endl;
+   // cout<<lopcode<<" opp1"<<endl;
 
     if ((flags & (1 << 4)) != 0 && numofbites != 2)
         lopcode++;
     if ((flags & (1 << 5)) != 0 && numofbites != 2)
         lopcode+=2;
-    cout<<lopcode<<" opp2"<<endl;
+    //cout<<lopcode<<" opp2"<<endl;
    // cout << currtext << endl;
         strs.clear();
 
@@ -98,7 +98,7 @@ using namespace std;
     strs >> sol;
 
     currtext+=sol;
-    cout << currtext << "here 1" << endl;
+    //cout << currtext << "here 1" << endl;
    // cout<<"sda"<<lopcode<<endl;
     if (numofbites == 3){
         for (int i = 0; i <= 3; i++){
@@ -114,7 +114,7 @@ using namespace std;
     }
     objectCode |= curraddress;
 
-      cout << objectCode << "here 2" << endl;
+      //cout << objectCode << "here 2" << endl;
       stringstream str2;
       //sol = "";
       str2<<setw(4)<<setfill('0')<<hex<<objectCode;
@@ -125,8 +125,11 @@ using namespace std;
     }
 void Textcodes::addText(std::vector<std::string> data, Sym* label) {
 
-    length = label->address.size() / 2;
-    currtext = label->address;
+    stringstream str;
+    str << setw(4) << setfill('0') << hex << label->address;
+    str >> currtext;
+    length = currtext.size() / 2;
+
     for (int i = 0; i < label->operandsNeedThisLabel.size(); i++)
     {
         stringstream stream;
@@ -164,6 +167,11 @@ void Textcodes::addText(std::vector<std::string> data, int locctr)
     else {
         if (data[1] == "WORD")
         {
+            if (length + 3 > 30)
+            {
+                cout << tostring() << '\n';
+                newText(locctr);
+            }
             stringstream streamo;
             streamo << setw(6) << setfill('0') << hex << data[2];
          //   cout << data[2] << ' ' << stream.str() << "******&&&&&&&&&&&&&&&&&&&&&" << endl;
@@ -181,6 +189,11 @@ void Textcodes::addText(std::vector<std::string> data, int locctr)
             }
             else {
                 hexa = data[2].substr(2, data[2].size() - 3);
+            }
+            if (length + (hexa.size() / 2) > 30)
+            {
+                cout << tostring() << '\n';
+                newText(locctr);
             }
             currtext += "^" + hexa;
             length += (hexa.size() / 2);
