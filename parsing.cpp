@@ -43,9 +43,9 @@ bool parsing::isDirective(string s){
 }
 
 void parsing::clear() {
-  parsing::valid = true; 
-  parsing::pcrel = true;  
-  parsing::numofBytes = 0; 
+  parsing::valid = true;
+  parsing::pcrel = true;
+  parsing::numofBytes = 0;
   parsing::modesaddress = 0;
   parsing::locc = 0;
 }
@@ -84,14 +84,14 @@ void parsing::checkParsing(vector<string> &statement) {
         	|| Symtable::getInstance()->getSymbol(s2) == nullptr) {
         	valid = false;
     	}
-    } 
-    if ((statement[2]=="" && Opcodes::getInstance()->getopcode(statement[1]) != "4c")) 
+    }
+    if ((statement[2]=="" && Opcodes::getInstance()->getopcode(statement[1]) != "4c"))
     	valid =false;
   	if (statement[2].find(',') != std::string::npos && statement[2].find(",X") == std::string::npos)
      	valid = false;
 }
 
-void  parsing::setnumofBytes(vector<string> &statement) { 
+void  parsing::setnumofBytes(vector<string> &statement) {
   if (statement[1][0] == '+')
      parsing::numofBytes = 4;
   else if (statement[1][statement[1].size()-1] == 'r' || statement[1][statement[1].size()-1] == 'R' || statement[1] == "RMO")
@@ -134,7 +134,7 @@ void parsing::setaddressmode(vector<string> &statement) {
          modesaddress += 1 << 1;
     }
 }
- 
+
 void parsing::parseDirective(vector<string> &statement) {
   cout << "FROM directives"<<endl;
 	if(statement[1] == "START")
@@ -147,7 +147,7 @@ void parsing::parseDirective(vector<string> &statement) {
 		switch (statement[1][3]) {
 			case 'B' :
 				if(regex_match(statement[2], r))
-					parsing::locc += stoi(statement[2]); 
+					parsing::locc += stoi(statement[2]);
 				break;
 			case 'W' :
 				if(regex_match(statement[2], r))
@@ -184,10 +184,48 @@ void parsing::parseDirective(vector<string> &statement) {
 			return;
 		}
 }
+/* bool is_number(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}*/
+int parsing::parseExpression(string exp) {
+
+    int signInd = 0;
+    int cnt = 0;
+    for (int i = 0; i < exp.size(); i++){
+        if (!isdigit(exp[i])) {
+            signInd = i;
+            cnt++;
+        }
+    }
+    if (cnt != 1 || signInd == 0 || signInd == exp.size() - 1)
+        return -1;
+    return strToInt(exp[signInd],exp.substr(0, signInd), exp.substr(signInd + 1, exp.size() - 1 - signInd));
+
+}
+int parsing::strToInt(char sign, string oper1, string oper2)
+{
+    switch (sign) {
+
+        case '+' : return stoi(oper1) + stoi(oper2);
+        case '-' : return stoi(oper1) - stoi(oper2);
+        case '*' : return stoi(oper1) * stoi(oper2);
+        case '/' : return stoi(oper1) / stoi(oper2);
+        default : return -1;
+    }
+}
 
 bool parsing::isValid() {
   return valid;
 }
-// int main() {
-// 	cout << "kamal" << endl;
-// }
+/*
+ int main() {
+ 	parsing par;
+ 	cout << par.parseExpression("12+12") << endl;
+ 	cout << par.parseExpression("256+25139") << endl;
+ 	cout << par.parseExpression("6*4") << endl;
+ 	 	cout << par.parseExpression("6*") << endl;
+
+ }*/
