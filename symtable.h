@@ -10,7 +10,7 @@ struct Sym {
    bool absolute;
    int program_block;
    int control_section;
-   std::list<std::string> operandsNeedThisLabel;
+   std::list<std::pair<std::string, int> > operandsNeedThisLabel;
 };
 
 class Symtable {
@@ -19,7 +19,7 @@ class Symtable {
       Symtable();
    public:
       static Symtable* getInstance();
-      void insert(std::string, int);
+      void insert(std::string, int, int);
       void insert(std::string, std::string, bool, int, int);
       Sym* getSymbol(std::string);
 };

@@ -24,6 +24,8 @@ bool dataGenerationDirectives(string oper)
 TextRecordFactory::TextRecordFactory(){
 
     textRecord = new Textcodes();
+    textRecord->newText(0);
+    valid = true;
 }
 
 TextRecordFactory* TextRecordFactory::getInstance()
@@ -45,6 +47,14 @@ Sym* TextRecordFactory::modifyPrevAddress(string label) {
 
     return symb;
 }
+void TextRecordFactory::breakText(int locctr)
+{
+    if(textRecord->length > 0){
+        cout << textRecord->tostring() << endl;
+        textRecord->newText(locctr);
+    }
+
+}
 void TextRecordFactory::addTextRecord(const vector<string>& statement, int locctr,long long flags,int numofbites ){
 
     //cout << statement[1] << "***************************" <<  '\n';
@@ -58,7 +68,8 @@ void TextRecordFactory::addTextRecord(const vector<string>& statement, int locct
         if (symb != nullptr)
         {
             if (textRecord->length > 0) {
-            cout << textRecord->tostring() << '\n';
+            //cout << textRecord->tostring() << '\n';
+                textRecord->newText(locctr);
             }
             textRecord->addText(statement, symb);
             textRecord->newText(locctr);
@@ -69,8 +80,7 @@ void TextRecordFactory::addTextRecord(const vector<string>& statement, int locct
         if (textRecord->length > 0) {
             cout << textRecord->tostring() << '\n';
         }
-       textRecord->addText(statement, symb);
-
+        textRecord->addText(statement, symb);
         textRecord->newText(locctr);
     }
     else {
@@ -81,8 +91,11 @@ void TextRecordFactory::addTextRecord(const vector<string>& statement, int locct
         }
        else  if(textRecord->length == 0)
         textRecord->newText(locctr);
-      textRecord->addText(statement,flags,numofbites);
+      textRecord->addText(statement,flags,numofbites, locctr);
       //to see cuurtext
      cout<< textRecord->tostring()<<endl;
     }
 }
+ string TextRecordFactory::gettextrecord(){
+     return textRecord->tostring();
+     }

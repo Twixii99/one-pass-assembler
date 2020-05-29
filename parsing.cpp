@@ -54,12 +54,12 @@ void parsing::clear() {
 parsing::parsing() {}
 
 int parsing::display(vector<string> &statement) {
-  parsing::clear();
+    parsing::clear();
 	string str = statement[1];
 	if(parsing::isDirective(str)) {
 		parseDirective(statement);
-    parsing::directive = true;
-    return parsing::locc;
+        parsing::directive = true;
+        return parsing::locc;
 	}
 	else {
 		if(statement[1][0] == '+')
@@ -69,7 +69,7 @@ int parsing::display(vector<string> &statement) {
 	if(parsing::valid && !directive) {
 		setnumofBytes(statement);
 		if(numofBytes != 2)
-		setaddressmode(statement);
+            setaddressmode(statement);
 		checkParsing(statement);
 	}
   return parsing::numofBytes;
@@ -83,6 +83,7 @@ void parsing::checkParsing(vector<string> &statement) {
         	|| Symtable::getInstance()->getSymbol(s2) == nullptr) {
         	valid = false;
     	}
+    	return;
     }
     if ((statement[2]=="" && Opcodes::getInstance()->getopcode(statement[1]) != "4c"))
     	valid =false;
@@ -150,8 +151,9 @@ void parsing::parseDirective(vector<string> &statement) {
           parsing::valid = 0;
 				break;
 			case 'W' :
-				if(regex_match(statement[2], r))
+				if(regex_match(statement[2], r)) {
 					parsing::locc += stoi(statement[2]) * 3;
+				}
         else
           parsing::valid = 0;
 				break;
@@ -163,7 +165,7 @@ void parsing::parseDirective(vector<string> &statement) {
 				break;
 			default :
 				if((statement[2][0] == 'X' || statement[2][0] == 'C')) {
-					if(statement[2][1] == statement[2][statement[2].size()-1] == '\'')
+					if(statement[2][1] == '\'' && statement[2][statement[2].size()-1] == '\'')
 						locc += statement[2].substr(2).size()-1;
           else
             parsing::valid = 0;
@@ -182,7 +184,7 @@ void parsing::parseDirective(vector<string> &statement) {
 		}
 	}
 	else if(statement[1] == "ORG") {
-		if(statement[2] == "" || !(statement[0] == "")) {
+		if(statement[2] == "") {
 			parsing:valid = 0;
 			return;
 		}

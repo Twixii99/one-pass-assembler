@@ -13,9 +13,11 @@ private:
     TextRecordFactory();
     Sym* modifyPrevAddress(string label);
 public:
-
+    bool valid;
     static TextRecordFactory* getInstance();
+    void breakText(int locctr);
     void addTextRecord(const std::vector<std::string> &statement, int locctr,long long flags, int numofbites);
+     std::string gettextrecord();
 };
 
 

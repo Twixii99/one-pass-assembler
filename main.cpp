@@ -29,6 +29,13 @@ bool dataGenerationDirective(string oper);
 const int DEFAULT_BLOCK = 0;
 const int DEFAULT_CSEC = 0;
 
+bool is_num(const std::string& s)
+{
+    std::string::const_iterator it = s.begin();
+    while (it != s.end() && std::isdigit(*it)) ++it;
+    return !s.empty() && it == s.end();
+}
+
 const string default_name = "DEFAULT"; // if the programmer didn't set a name for the program.
 
 int lineNO = 1;
@@ -73,12 +80,17 @@ int main()
     while(getline(source_file, line)) {
       stringstream data_line(line);
       for(string s; data_line >> s; ) {
-        transform(s.begin(), s.end(), s.begin(), ::toupper);
+            if(data.size() == 2 && data[1] == "BYTE")
+                toupper(s[0]);
+            else{
+                transform(s.begin(), s.end(), s.begin(), ::toupper);
+            }
         if(data.empty() && (par.isDirective(s) || operations->getopcode(s)!= "null" || s[0]=='+'))
           data.push_back("");
         data.push_back(s);
       }
       if(data.size() < 3) data.push_back("");
+      if(data[0] == ".") { data.clear(); continue; }
       int x = par.parseExpression(data[2]);                   ///////////////        3lem
       if(x != -1) data[2] = to_string(x);
       string data2,data1;
@@ -86,6 +98,10 @@ int main()
       if (data[1] !="" && data[1][0]=='+')
       {
         data1=data[1].substr(1);
+      }
+      if (data1 == "SUB")
+      {
+          cout << "SUB" << endl;
       }
       if(data[0] != "") {
         if(sys->getSymbol(data[0]) == nullptr || sys->getSymbol(data[0])->address =="*" ){
@@ -95,16 +111,21 @@ int main()
             codevalide=false;
         }
       }
+      par.display(data);
       if(data[2]!= ""  ) {
          data2=data[2];
         if(data[2][0] == '@' || data[2][0]=='#')
            data2 = data[2].substr(1);
-        if(isalpha(data2[0]) && sys->getSymbol(data2) == nullptr) {
-            sys->insert(data2, loccnt);
-            opsymtab<<data[2] <<"   "<<sys->getSymbol(data2)->operandsNeedThisLabel.size()<<endl;
-        } else codevalide=false;
+        if(isalpha(data2[0]) && (sys->getSymbol(data2) == nullptr || sys->getSymbol(data2)->address =="*")) {
+            sys->insert(data2, loccnt, par.modesaddress);
+            opsymtab<<data[2] <<"   "<<sys->getSymbol(data2)->operandsNeedThisLabel.size()<<data[1]<<" "<<data[0]<<endl;
+        }
       }
-      par.display(data);
+      if (data[1] == "RMO")
+      {
+          cout << "HELP" << endl;
+          cout << par.directive << ' ' <<par.isValid() << endl;
+      }
       if(par.isValid() && (!par.directive || (par.directive &&  dataGenerationDirective(data1))))
         fac->addTextRecord(data,loccnt,par.modesaddress,par.numofBytes);
 
@@ -112,6 +133,8 @@ int main()
       increasingloccnt(data);
       data.clear();
   }
+  cout<<"****************"<<endl;
+   cout<<fac->gettextrecord()<<endl;
     return 0;
 }
 
@@ -157,20 +180,28 @@ void increasingloccnt(vector<string> &statement) {
         if(par.isValid())
           if(statement[1] == "START") {
             loccnt = par.display(statement);
+            fac->breakText(loccnt);
             if(loccnt == 0)
               pcUse = 1;
           }
           if(statement[1] == "RESW" || statement[1] == "WORD" || statement[1] == "RESB" || statement[1] == "BYTE")
             loccnt += par.display(statement);
           else if(statement[1] == "ORG") {
-            if(statement[1][0] > 64 && statement[1][0] < 91) {
-              if(sys->getSymbol(statement[2]) != nullptr)
+            if(statement[2][0] > 64 && statement[2][0] < 91) {
+              if(sys->getSymbol(statement[2]) != nullptr){
                 loccnt = stoi(sys->getSymbol(statement[2])->address);
+                fac->breakText(loccnt);
+              }
               else {
                 codevalide = false;
               }
             } else {
-              loccnt = stoi(statement[2]);
+                if (!is_num(statement[2])){
+                    codevalide = false;
+                    return;
+                }
+                loccnt = std::stoul(statement[2], nullptr, 16);
+                fac->breakText(loccnt);
             }
           } else if(statement[1] == "EQU") {
               if(sys->getSymbol(statement[2]) != nullptr)
